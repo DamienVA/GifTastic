@@ -12,98 +12,106 @@
 <body>
   <div class="container"></div>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">GifTastic</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <div id="buttons-view"></div>
-        <!-- <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link">Disabled</a>
-          </li>
-        </ul> -->
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" id="movie-input" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" id="add-movie" type="submit">Search</button>
-        </form>
-      </div>
-    </nav>
+    <a class="navbar-brand" href="#">GifTastic</a>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" id="movie-input" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" id="add-movie" type="submit">Search</button>
+    </form>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="container" id="buttons-view"></div>
+    </div>
+  </nav>
 
 
 
-    <!-- Movies will get dumped Here -->
-    <div id="movies-view"></div>
+  <!-- Movies will get dumped Here -->
+  <div id="gifView"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript">
-      // Initial array of movies
-      var movies = [];
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    // Initial array of movies
+    var movies = [];
 
-      function displayMovieInfo() {
+    function displayMovieInfo() {
 
-        var gifData = $(this).attr('data-name');
+      var gifData = $(this).attr('data-name');
 
-        var queryURL = 'https://api.giphy.com/v1/gifs/search?api_key=xBkjXWfwpJhobkN9KkqLvk73XEgGijUn&q=' + gifData + '&limit=10&rating=PG&lang=en'
+      var queryURL = 'https://api.giphy.com/v1/gifs/search?api_key=xBkjXWfwpJhobkN9KkqLvk73XEgGijUn&q=' + gifData + '&limit=10&rating=PG&lang=en'
+
+      $.ajax({
+        url: queryURL,
+        method: 'GET',
+      }).then(function (response) {
+        console.log(response);
+        var gifDiv = $('<div class="gifsHere">');
+        var title = reponse.data[0].title;
+        var gifURL = response.data[0].images.fixed_height.url;
+        console.log(gifURL)
+        // My Try
+        var gif = $('<img>').attr('src', gifURL);
+        gifDiv.append(gif);
+        $('#gifView').prepend(gifDiv);
+        ////
+        // Found on the web
+        // $("img").attr({
+        //   src: "/resources/hat.gif",
+        //   title: "jQuery",
+        //   alt: "jQuery Logo"
+        // });
+        // $("div").text($("img").attr("alt"));
         
-        $.ajax({
-            url: queryURL,
-            method: 'GET',
-        })  .then(function (response) {
-                console.log(response);
-                
-            })
-      };
+      })
+    };
 
-      // Function for displaying movie data
-      function renderButtons() {
+    // Function for displaying movie data
+    function renderButtons() {
 
-        // Deletes the movies prior to adding new movies
-        // (this is necessary otherwise you will have repeat buttons)
-        $("#buttons-view").empty();
-        // Loops through the array of movies
-        for (var i = 0; i < movies.length; i++) {
+      // Deletes the movies prior to adding new movies
+      // (this is necessary otherwise you will have repeat buttons)
+      $("#buttons-view").empty();
+      // Loops through the array of movies
+      for (var i = 0; i < movies.length; i++) {
 
-          // Then dynamicaly generates buttons for each movie in the array
-          // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
-          var a = $("<button>");
-          // Adds a class of movie to our button
-          a.addClass("movie");
-          // Added a data-attribute
-          a.attr("data-name", movies[i]);
-          // Provided the initial button text
-          a.text(movies[i]);
-          // Added the button to the buttons-view div
-          $("#buttons-view").append(a);
-        }
+        // Then dynamicaly generates buttons for each movie in the array
+        // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+        var a = $("<button>");
+        // Adds a class of movie to our button
+        a.addClass("movie btn btn-primary btn-lg");
+        // Added a data-attribute 
+        a.attr("data-name", movies[i]);
+        // Provided the initial button text
+        a.text(movies[i]);
+        // Added the button to the buttons-view div
+        $("#buttons-view").append(a);
       }
+    }
 
-      // This function handles events where the add movie button is clicked
-      $("#add-movie").on("click", function(event) {
-        event.preventDefault();
-        // This line of code will grab the input from the textbox
-        var movie = $("#movie-input").val().trim();
-
+    // This function handles events where the add movie button is clicked
+    $("#add-movie").on("click", function (event) {
+      event.preventDefault();
+      // This line of code will grab the input from the textbox
+      var movie = $("#movie-input").val().trim();
+      if (movie !== "") {
         // The movie from the textbox is then added to our array
         movies.push(movie);
 
         // Calling renderButtons which handles the processing of our movie array
         renderButtons();
-      });
+        // Clears Input field
+        $('#movie-input').val('');
+      }
+    });
 
-      // Adding click event listeners to all elements with a class of "movie"
-      $(document).on("click", ".movie", displayMovieInfo);
+    // Adding click event listeners to all elements with a class of "movie"
+    $(document).on("click", ".movie", displayMovieInfo);
 
-      // Calling the renderButtons function to display the intial buttons
-      renderButtons();
-    </script>
+    // Calling the renderButtons function to display the intial buttons
+    renderButtons();
+  </script>
   </div>
 </body>
 
