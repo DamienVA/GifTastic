@@ -14,7 +14,8 @@
   <nav class="d-flex justify-content-around navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">GifTastic</a>
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" id="topic-input" placeholder="Search for highlights" aria-label="Search">
+      <input class="form-control mr-sm-2" type="search" id="topic-input" placeholder="Search for highlights"
+        aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" id="add-topic" type="submit">Search</button>
     </form>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -31,7 +32,7 @@
   <!-- GIFs will get dumped Here -->
   <div class="constainer">
     <div id="gifView" class="row"></div>
-      <div class="col-1"></div>
+    <div class="col-1"></div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -57,7 +58,10 @@
           var gifDiv = $('<div class="gifsHere col-2">');
           var title = response.data[i].title;
           var gifURL = response.data[i].images.fixed_width.url;
-          var gif = $('<img>').attr('src', gifURL);
+          var gif = $('<img>').attr({
+            src: gifURL,
+            class: 'gif',
+          });
           var gifP = $('<p>').text('Title: ' + title);
           gifDiv.prepend(gif);
           // gifDiv.prepend(gifP);
@@ -89,11 +93,11 @@
     }
 
     // This function handles events where the add topic button is clicked
-      $("#add-topic").on("click", function (event) {
-       event.preventDefault();
-       // This line of code will grab the input from the textbox
-       var topic = $("#topic-input").val().trim();
-       if (topic !== "") {
+    $("#add-topic").on("click", function (event) {
+      event.preventDefault();
+      // This line of code will grab the input from the textbox
+      var topic = $("#topic-input").val().trim();
+      if (topic !== "") {
         // The topic from the textbox is then added to our array
         topics.push(topic);
 
@@ -104,11 +108,19 @@
       }
     });
 
+    // This function pauses the gif on click
+    $(document).on('click', '.gif', function () {
+      console.log("CLICKED!")
+      var state = $(this).attr('data-state');
+      console.log(state);
+      
+    })
+
     // Adding click event listeners to all elements with a class of "topic"
-     $(document).on("click", ".topic", displayGifs);
+    $(document).on("click", ".topic", displayGifs);
 
     // Calling the renderButtons function to display the intial buttons
-     renderButtons();
+    renderButtons();
   </script>
   </div>
 </body>
