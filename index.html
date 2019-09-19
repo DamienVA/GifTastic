@@ -56,10 +56,11 @@
         // Loop through data for all 10 gifs
         for (var i = 0; i < data.length; i++) {
           var gifDiv = $('<div class="gifsHere col-2">');
-          var title = response.data[i].title;
-          var gifURL = response.data[i].images.fixed_width.url;
+          var title = data[i].title;
+          var gifStill = data[i].images.fixed_width_still.url;
+          var gifAnimated = data[i].images.fixed_width.url;
           var gif = $('<img>').attr({
-            src: gifURL,
+            src: gifAnimated,
             class: 'gif',
           });
           var gifP = $('<p>').text('Title: ' + title);
@@ -111,10 +112,15 @@
     // This function pauses the gif on click
     $(document).on('click', '.gif', function () {
       console.log("CLICKED!")
-      var state = $(this).attr('data-state');
-      console.log(state);
-      
-    })
+      var src = $(this).attr('src');
+      console.log(src);
+      if (src === gifAnimated) {
+        src.replace(gifStill);
+      }
+      else {
+        src = gifAnimated;
+      }
+    });
 
     // Adding click event listeners to all elements with a class of "topic"
     $(document).on("click", ".topic", displayGifs);
