@@ -11,106 +11,104 @@
 
 <body>
   <div class="container"></div>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="d-flex justify-content-around navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">GifTastic</a>
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" id="movie-input" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" id="add-movie" type="submit">Search</button>
+      <input class="form-control mr-sm-2" type="search" id="topic-input" placeholder="Search for highlights" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" id="add-topic" type="submit">Search</button>
     </form>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="container" id="buttons-view"></div>
+      <div class="d-flex justify-content-around" id="buttons-view"></div>
     </div>
   </nav>
 
 
 
-  <!-- Movies will get dumped Here -->
-  <div id="gifView"></div>
+  <!-- GIFs will get dumped Here -->
+  <div class="constainer">
+    <div id="gifView" class="row"></div>
+      <div class="col-1"></div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
-    // Initial array of movies
-    var movies = [];
+    // Initial array of topics
+    var topics = ['NFL', 'MLB', 'NBA',];
 
-    function displayMovieInfo() {
+    function displayGifs() {
 
       var gifData = $(this).attr('data-name');
 
-      var queryURL = 'https://api.giphy.com/v1/gifs/search?api_key=xBkjXWfwpJhobkN9KkqLvk73XEgGijUn&q=' + gifData + '&limit=10&rating=PG&lang=en'
+      var queryURL = 'https://api.giphy.com/v1/gifs/search?api_key=xBkjXWfwpJhobkN9KkqLvk73XEgGijUn&q=' + gifData + '+highlights&limit=10&rating=PG13&lang=en'
 
       $.ajax({
         url: queryURL,
         method: 'GET',
       }).then(function (response) {
         console.log(response);
-        var gifDiv = $('<div class="gifsHere">');
-        var title = reponse.data[0].title;
-        var gifURL = response.data[0].images.fixed_height.url;
-        console.log(gifURL)
-        // My Try
-        var gif = $('<img>').attr('src', gifURL);
-        gifDiv.append(gif);
-        $('#gifView').prepend(gifDiv);
-        ////
-        // Found on the web
-        // $("img").attr({
-        //   src: "/resources/hat.gif",
-        //   title: "jQuery",
-        //   alt: "jQuery Logo"
-        // });
-        // $("div").text($("img").attr("alt"));
-        
-      })
+        // Data retrieved through AJAX call
+        var data = response.data;
+        // Loop through data for all 10 gifs
+        for (var i = 0; i < data.length; i++) {
+          var gifDiv = $('<div class="gifsHere col-2">');
+          var title = response.data[i].title;
+          var gifURL = response.data[i].images.fixed_width.url;
+          var gif = $('<img>').attr('src', gifURL);
+          var gifP = $('<p>').text('Title: ' + title);
+          gifDiv.prepend(gif);
+          // gifDiv.prepend(gifP);
+          $('#gifView').prepend(gifDiv);
+        };
+      });
     };
 
-    // Function for displaying movie data
+    // Function for displaying gif data
     function renderButtons() {
 
-      // Deletes the movies prior to adding new movies
+      // Deletes the topics prior to adding new topics
       // (this is necessary otherwise you will have repeat buttons)
       $("#buttons-view").empty();
-      // Loops through the array of movies
-      for (var i = 0; i < movies.length; i++) {
+      // Loops through the array of topics
+      for (var i = 0; i < topics.length; i++) {
 
-        // Then dynamicaly generates buttons for each movie in the array
-        // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+        // Then dynamicaly generates buttons for each category in the array
         var a = $("<button>");
-        // Adds a class of movie to our button
-        a.addClass("movie btn btn-primary btn-lg");
+        // Adds a class of gif to our button
+        a.addClass("topic btn btn-primary btn-lg");
         // Added a data-attribute 
-        a.attr("data-name", movies[i]);
+        a.attr("data-name", topics[i]);
         // Provided the initial button text
-        a.text(movies[i]);
+        a.text(topics[i]);
         // Added the button to the buttons-view div
         $("#buttons-view").append(a);
       }
     }
 
-    // This function handles events where the add movie button is clicked
-    $("#add-movie").on("click", function (event) {
-      event.preventDefault();
-      // This line of code will grab the input from the textbox
-      var movie = $("#movie-input").val().trim();
-      if (movie !== "") {
-        // The movie from the textbox is then added to our array
-        movies.push(movie);
+    // This function handles events where the add topic button is clicked
+      $("#add-topic").on("click", function (event) {
+       event.preventDefault();
+       // This line of code will grab the input from the textbox
+       var topic = $("#topic-input").val().trim();
+       if (topic !== "") {
+        // The topic from the textbox is then added to our array
+        topics.push(topic);
 
-        // Calling renderButtons which handles the processing of our movie array
+        // Calling renderButtons which handles the processing of our topic array
         renderButtons();
         // Clears Input field
-        $('#movie-input').val('');
+        $('#topic-input').val('');
       }
     });
 
-    // Adding click event listeners to all elements with a class of "movie"
-    $(document).on("click", ".movie", displayMovieInfo);
+    // Adding click event listeners to all elements with a class of "topic"
+     $(document).on("click", ".topic", displayGifs);
 
     // Calling the renderButtons function to display the intial buttons
-    renderButtons();
+     renderButtons();
   </script>
   </div>
 </body>
